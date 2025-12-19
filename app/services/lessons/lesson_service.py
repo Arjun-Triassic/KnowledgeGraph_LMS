@@ -31,6 +31,7 @@ class LessonService(BaseService[Lesson]):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lesson not found")
         return lesson
 
+
     async def update_lesson(self, lesson_id: int, payload: LessonUpdate) -> Lesson:
         lesson = await self.get_lesson(lesson_id)
         return await self.update(lesson, payload.dict(exclude_unset=True))
