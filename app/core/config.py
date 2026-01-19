@@ -60,6 +60,13 @@ class Settings(BaseSettings):
         description="Use TLS for SMTP (default: True)",
     )
 
+    # JWT Secret Key
+    secret_key: str = Field(
+        "your-secret-key-change-in-production",
+        env="SECRET_KEY",
+        description="Secret key for JWT token signing",
+    )
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

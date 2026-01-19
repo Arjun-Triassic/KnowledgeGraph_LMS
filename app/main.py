@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware 
 from app.middleware.audit import AuditMiddleware
+from app.services.auth.auth_routes import router as auth_router
 from app.services.users.user_routes import router as users_router
 from app.services.courses.course_routes import router as courses_router
 from app.services.modules.module_routes import router as modules_router
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
 
     
     # Routers
+    app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
     app.include_router(users_router, prefix="/users", tags=["Users"])
     app.include_router(courses_router, prefix="/courses", tags=["Courses"])
     app.include_router(modules_router, prefix="/modules", tags=["Modules"])
