@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -20,7 +21,7 @@ class Enrollment(Base):
     )
     progress: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     completion_percentage: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
-    last_accessed: Mapped[datetime | None] = mapped_column(
+    last_accessed: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
     )

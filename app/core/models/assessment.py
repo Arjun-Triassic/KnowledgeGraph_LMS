@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import Enum, Float, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -43,24 +43,24 @@ class Question(Base):
     """
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    assessment_id: Mapped[int | None] = mapped_column(
+    assessment_id: Mapped[Optional[int]] = mapped_column(
         Integer,
         ForeignKey("assessment.id", ondelete="CASCADE"),
         nullable=True,
     )
-    lesson_activity_id: Mapped[int | None] = mapped_column(
+    lesson_activity_id: Mapped[Optional[int]] = mapped_column(
         Integer,
         ForeignKey("lessonactivity.id", ondelete="CASCADE"),
         nullable=True,
     )
     content: Mapped[str] = mapped_column(String(1000), nullable=False)
 
-    assessment: Mapped["Assessment | None"] = relationship(
+    assessment: Mapped[Optional["Assessment"]] = relationship(
         "Assessment",
         back_populates="questions",
     )
 
-    lesson_activity: Mapped["LessonActivity | None"] = relationship(
+    lesson_activity: Mapped[Optional["LessonActivity"]] = relationship(
         "LessonActivity",
         back_populates="questions",
     )

@@ -1,6 +1,7 @@
-from typing import List
+from typing import AsyncGenerator, List
 
 from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.common.base_service import BaseService
@@ -60,6 +61,22 @@ class AssessmentService(BaseService[Assessment]):
 
     async def list_assessments_for_course(self, course_id: int) -> List[Assessment]:
         return await self.list(filters={"course_id": course_id})
+
+    async def question_stream(self, course_id: int) -> AsyncGenerator[Question, None]:
+        """
+        Async generator that streams questions for a course.
+        Streams all questions from all assessments in the course.
+        """
+        # Get all assessments for the course
+        assessments_stmt = select(Assessment).where(Assessment.course_id == course_id)
+        assessments_result = await self.session.stream(assessments_stmt)
+        
+        async for assessment_row in assessments_result.scalars():
+            # Stream questions for each assessment
+            questions_stmt = select(Question).where(Question.assessment_id == assessment_row.id)
+            questions_result = await self.session.stream(questions_stmt)
+            async for question_row in questions_result.scalars():
+                yield question_row
 
 
 

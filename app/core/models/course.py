@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import Column, Enum, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -29,11 +29,11 @@ class Course(Base):
     description: Mapped[str] = mapped_column(String(1000), nullable=False)
     category: Mapped[str] = mapped_column(String(100), nullable=False)
 
-    instructor_id: Mapped[int | None] = mapped_column(
+    instructor_id: Mapped[Optional[int]] = mapped_column(
         Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
 
-    instructor: Mapped["User | None"] = relationship(
+    instructor: Mapped[Optional["User"]] = relationship(
         "User",
         back_populates="courses_as_instructor",
     )

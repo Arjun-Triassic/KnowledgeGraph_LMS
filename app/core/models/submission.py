@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,17 +16,17 @@ class Submission(Base):
     user_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
     )
-    assessment_id: Mapped[int | None] = mapped_column(
+    assessment_id: Mapped[Optional[int]] = mapped_column(
         Integer,
         ForeignKey("assessment.id", ondelete="CASCADE"),
         nullable=True,
     )
-    lesson_activity_id: Mapped[int | None] = mapped_column(
+    lesson_activity_id: Mapped[Optional[int]] = mapped_column(
         Integer,
         ForeignKey("lessonactivity.id", ondelete="CASCADE"),
         nullable=True,
     )
-    score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     submitted_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.utcnow,
@@ -33,11 +34,11 @@ class Submission(Base):
     )
 
     user: Mapped["User"] = relationship("User", back_populates="submissions")
-    assessment: Mapped["Assessment | None"] = relationship(
+    assessment: Mapped[Optional["Assessment"]] = relationship(
         "Assessment",
         back_populates="submissions",
     )
-    lesson_activity: Mapped["LessonActivity | None"] = relationship(
+    lesson_activity: Mapped[Optional["LessonActivity"]] = relationship(
         "LessonActivity",
         back_populates="submissions",
     )

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -13,7 +14,7 @@ class AuditLog(Base):
     """
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int | None] = mapped_column(
+    user_id: Mapped[Optional[int]] = mapped_column(
         Integer,
         ForeignKey("user.id", ondelete="SET NULL"),
         nullable=True,
@@ -33,7 +34,7 @@ class AuditLog(Base):
         nullable=False,
     )
 
-    user: Mapped["User | None"] = relationship("User", back_populates="audit_logs")
+    user: Mapped[Optional["User"]] = relationship("User", back_populates="audit_logs")
 
 
 

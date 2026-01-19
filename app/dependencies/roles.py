@@ -1,5 +1,6 @@
-from collections.abc import Callable
-from typing import Iterable, Optional
+from __future__ import annotations
+
+from typing import Callable, Iterable, Optional
 
 from fastapi import Depends, HTTPException, status
 

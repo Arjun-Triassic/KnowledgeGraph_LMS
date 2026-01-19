@@ -28,6 +28,38 @@ class Settings(BaseSettings):
         "Defaults to DATABASE_URL if not set.",
     )
 
+    # Email configuration
+    smtp_host: Optional[str] = Field(
+        None,
+        env="SMTP_HOST",
+        description="SMTP server hostname (e.g., smtp.gmail.com)",
+    )
+    smtp_port: int = Field(
+        587,
+        env="SMTP_PORT",
+        description="SMTP server port (default: 587)",
+    )
+    smtp_user: Optional[str] = Field(
+        None,
+        env="SMTP_USER",
+        description="SMTP username/email",
+    )
+    smtp_password: Optional[str] = Field(
+        None,
+        env="SMTP_PASSWORD",
+        description="SMTP password",
+    )
+    smtp_from_email: Optional[str] = Field(
+        None,
+        env="SMTP_FROM_EMAIL",
+        description="Default sender email address",
+    )
+    smtp_use_tls: bool = Field(
+        True,
+        env="SMTP_USE_TLS",
+        description="Use TLS for SMTP (default: True)",
+    )
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

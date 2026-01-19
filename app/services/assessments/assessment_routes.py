@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db.session import get_db_session
@@ -83,6 +84,37 @@ async def list_assessments_for_course(
     service = AssessmentService(session)
     assessments = await service.list_assessments_for_course(course_id)
     return [AssessmentResponse.from_orm(a) for a in assessments]
+
+
+@router.get(
+    "/questions/stream/{course_id}",
+    summary="Stream questions for a course",
+    response_class=StreamingResponse,
+)
+async def stream_questions(
+    course_id: int,
+    _: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> StreamingResponse:
+    """
+    Stream all questions for a course as JSON lines (newline-delimited JSON).
+    Useful for large question banks.
+    """
+    import json
+    
+    async def generate():
+        service = AssessmentService(session)
+        async for question in service.question_stream(course_id):
+            # Convert to dict and yield as JSON line
+            question_dict = {
+                "id": question.id,
+                "assessment_id": question.assessment_id,
+                "lesson_activity_id": question.lesson_activity_id,
+                "content": question.content,
+            }
+            yield json.dumps(question_dict) + "\n"
+    
+    return StreamingResponse(generate(), media_type="application/x-ndjson")
 
 
 
