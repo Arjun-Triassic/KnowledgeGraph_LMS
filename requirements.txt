@@ -2,6 +2,7 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.29.0
 sqlalchemy[asyncio]>=2.0.30
 asyncpg>=0.29.0
+psycopg2-binary>=2.9.0
 alembic>=1.13.1
 # Pin to Pydantic v1 to keep BaseSettings and orm_mode APIs
 pydantic>=1.10,<2

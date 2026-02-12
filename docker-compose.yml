@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: knowledgegraph_lms_db
+    environment:
+      POSTGRES_USER: kg_user
+      POSTGRES_PASSWORD: kg_password
+      POSTGRES_DB: knowledgegraph_lms
+    ports:
+      - "5433:5432"  # Using 5433 on host to avoid conflict with local PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kg_user -d knowledgegraph_lms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lms_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: knowledgegraph_lms_app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://kg_user:kg_password@db:5432/knowledgegraph_lms
+      ALEMBIC_DATABASE_URL: postgresql+asyncpg://kg_user:kg_password@db:5432/knowledgegraph_lms
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+    networks:
+      - lms_network
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        sleep 5 &&
+        echo 'Running database migrations...' &&
+        alembic -c alembic.ini upgrade head &&
+        echo 'Starting application...' &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
+
+volumes:
+  postgres_data:
+
+networks:
+  lms_network:
+    driver: bridge
+
